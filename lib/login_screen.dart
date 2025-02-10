@@ -1,17 +1,5 @@
 import 'package:flutter/material.dart';
 
-class LoginApp extends StatelessWidget {
-  const LoginApp({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: LoginScreen(),
-    );
-  }
-}
-
 class LoginScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -20,9 +8,11 @@ class LoginScreen extends StatelessWidget {
         children: [
           // Background Image
           Container(
+            height: 3000,
+            width: double.infinity,
             decoration: BoxDecoration(
               image: DecorationImage(
-                image: AssetImage('assets/images/astronaut_background.jpg'),
+                image: AssetImage('asset/png.png'),
                 fit: BoxFit.cover,
               ),
             ),
@@ -38,16 +28,16 @@ class LoginScreen extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  SizedBox(height: 60),
+                  SizedBox(height: 30, width: double.infinity),
                   Text(
                     'MINDFRAME',
                     style: TextStyle(
                       color: Colors.white,
-                      fontSize: 36,
+                      fontSize: 50,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  SizedBox(height: 5),
+                  SizedBox(height: 0),
                   Text(
                     'Innovation Platform',
                     style: TextStyle(
@@ -86,10 +76,11 @@ class LoginScreen extends StatelessWidget {
                         ),
                       ),
                       child: Text(
-                        'Log In →',
+                        'Log In',
                         style: TextStyle(
                           color: Colors.black,
                           fontSize: 18,
+                          fontWeight: FontWeight.bold,
                         ),
                       ),
                     ),
