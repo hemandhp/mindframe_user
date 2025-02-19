@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:mindframe_user/common_widget/custom_button.dart';
 import 'package:mindframe_user/common_widget/custom_text_formfield.dart';
 import 'package:mindframe_user/features/signin/signin_screen.dart';
+import 'package:mindframe_user/features/signup/signup_second_screen.dart';
 import 'package:mindframe_user/util/value_validator.dart';
 
 class SignupScreen extends StatefulWidget {
@@ -77,7 +78,13 @@ class _SignupScreenState extends State<SignupScreen> {
                     ),
                     CustomButton(
                       inverse: true,
-                      onPressed: () {},
+                      onPressed: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const SignupSecondScreen(),
+                            ));
+                      },
                       label: 'Next',
                     ),
                     const SizedBox(

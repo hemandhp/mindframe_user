@@ -61,11 +61,13 @@ class _SigninScreenState extends State<SigninScreen> {
                     CustomButton(
                       inverse: true,
                       onPressed: () {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => const HomeScreen(),
-                            ));
+                        Navigator.pushAndRemoveUntil(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const HomeScreen(),
+                          ),
+                          (Route<dynamic> route) => false,
+                        );
                       },
                       label: 'Login',
                     ),
