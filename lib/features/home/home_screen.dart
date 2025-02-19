@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:iconly/iconly.dart';
+import 'package:mindframe_user/features/profile/profile_screen.dart';
 import 'package:mindframe_user/features/project_view_screen/project_view_screen.dart';
 import 'package:spotlight_bottom_navbar/spotlight_bottom_navbar.dart';
 
@@ -54,16 +55,7 @@ class _HomeScreenState extends State<HomeScreen> {
               ],
             ),
           ),
-          Container(
-            color: Colors.white,
-            child: const Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text('Profile Page',
-                    style: TextStyle(color: Colors.black, fontSize: 24)),
-              ],
-            ),
-          ),
+          const ProfileScreen()
         ],
         onPageChanged: (index) {
           setState(() {
