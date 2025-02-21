@@ -8,7 +8,7 @@ class ProfileScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: Colors.white,
+      color: Colors.grey[200],
       child: Padding(
         padding: const EdgeInsets.only(top: 40),
         child: Column(
