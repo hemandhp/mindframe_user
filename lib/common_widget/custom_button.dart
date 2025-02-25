@@ -33,7 +33,7 @@ class _CustomButtonState extends State<CustomButton> {
     return AnimatedContainer(
       duration: const Duration(milliseconds: 100),
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(30),
+        borderRadius: BorderRadius.circular(15),
         boxShadow: [
           BoxShadow(
             color: Theme.of(context).colorScheme.shadow,
@@ -66,8 +66,8 @@ class _CustomButtonState extends State<CustomButton> {
           padding: EdgeInsets.only(
             left: widget.label != null ? 15 : 10,
             right: widget.iconData != null ? 10 : 15,
-            top: widget.iconData != null ? 7 : 12,
-            bottom: widget.iconData != null ? 7 : 12,
+            top: widget.iconData != null ? 7 : 14,
+            bottom: widget.iconData != null ? 7 : 14,
           ),
           child: Row(
             mainAxisAlignment: widget.label != null && widget.iconData != null

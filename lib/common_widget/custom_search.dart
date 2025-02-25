@@ -39,7 +39,7 @@ class _CustomSearchState extends State<CustomSearch> {
       width: 600,
       child: Material(
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20),
+          borderRadius: BorderRadius.circular(15),
           side: BorderSide(
             color: Theme.of(context).colorScheme.outline,
           ),
@@ -61,7 +61,7 @@ class _CustomSearchState extends State<CustomSearch> {
                   hintStyle: widget.textStyle,
                   contentPadding: const EdgeInsets.symmetric(
                     horizontal: 15,
-                    vertical: 12,
+                    vertical: 15,
                   ),
                   filled: false,
                   isCollapsed: true,

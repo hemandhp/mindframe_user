@@ -8,50 +8,31 @@ class CollaboratorScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Material(
-      color: Colors.grey[200],
-      child: CustomScrollView(
-        slivers: [
-          SliverAppBar(
-            centerTitle: false,
-            floating: true,
-            backgroundColor: Colors.grey[200],
-            elevation: 0,
-            title: Text(
-              'Need Collab',
-              style: Theme.of(context)
-                  .textTheme
-                  .titleLarge!
-                  .copyWith(color: Colors.black87, fontWeight: FontWeight.bold),
-            ),
-          ),
-          SliverPadding(
-            padding: const EdgeInsets.all(16.0),
-            sliver: SliverList(
-              delegate: SliverChildBuilderDelegate(
-                (context, index) => Padding(
-                  padding: const EdgeInsets.only(bottom: 16.0),
-                  child: ProjectCard(
-                    category: 'Tech',
-                    image: 'asset/3350236.jpg',
-                    onTap: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const ProjectDetailScreen(),
-                          ));
-                    },
-                    title: 'Project ${index + 1}',
-                    subtitle: 'An innovative solution for modern challenges',
-                    daysToGo: 100 - (index * 10),
-                    totalDays: 250,
-                    needCollab: true,
-                  ),
-                ),
-                childCount: 5,
+      child: ListView.separated(
+        padding: const EdgeInsets.all(20),
+        shrinkWrap: true,
+        physics: const NeverScrollableScrollPhysics(),
+        scrollDirection: Axis.vertical,
+        itemBuilder: (context, index) => ProjectCard(
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const ProjectDetailScreen(),
               ),
-            ),
-          ),
-        ],
+            );
+          },
+          image: 'asset/54187.jpg',
+          title: "Tesla",
+          subtitle: 'Innovative electric car project',
+          daysToGo: 33,
+          totalDays: 50,
+          needCollab: true,
+        ),
+        separatorBuilder: (context, index) => const SizedBox(
+          height: 20,
+        ),
+        itemCount: 4,
       ),
     );
   }

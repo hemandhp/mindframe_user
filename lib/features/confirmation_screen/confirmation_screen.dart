@@ -1,9 +1,35 @@
 import 'package:flutter/material.dart';
 import 'package:mindframe_user/features/signin/signin_screen.dart';
 import 'package:mindframe_user/features/signup/signup_screen.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
-class ConfirmationScreen extends StatelessWidget {
+import '../home/home_screen.dart';
+
+class ConfirmationScreen extends StatefulWidget {
   const ConfirmationScreen({super.key});
+
+  @override
+  State<ConfirmationScreen> createState() => _ConfirmationScreenState();
+}
+
+class _ConfirmationScreenState extends State<ConfirmationScreen> {
+  @override
+  void initState() {
+    Future.delayed(
+        const Duration(
+          milliseconds: 100,
+        ), () {
+      User? currentUser = Supabase.instance.client.auth.currentUser;
+      if (currentUser != null) {
+        Navigator.of(context).pushAndRemoveUntil(
+            MaterialPageRoute(
+              builder: (context) => HomeScreen(),
+            ),
+            (route) => false);
+      }
+    });
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {

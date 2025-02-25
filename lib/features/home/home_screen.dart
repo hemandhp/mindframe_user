@@ -11,30 +11,43 @@ class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
   @override
-  _HomeScreenState createState() => _HomeScreenState();
+  State<HomeScreen> createState() => _HomeScreenState();
 }
 
 class _HomeScreenState extends State<HomeScreen> {
   int _selectedIndex = 0;
 
-  void _onPageChanged(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
-  }
-
-  void _onAddPressed() {
-    // Handle the add button press
-    // For example, navigate to a new screen or show a dialog
-    print('Add button pressed');
+  String titleName(int index) {
+    switch (index) {
+      case 0:
+        return 'Home';
+      case 1:
+        return 'Funding';
+      case 2:
+        return 'My Projects';
+      case 3:
+        return 'Collabs';
+      case 4:
+        return 'Profile';
+    }
+    return "";
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
+      appBar: AppBar(
+        title: Text(
+          titleName(_selectedIndex),
+          style: Theme.of(context)
+              .textTheme
+              .titleLarge!
+              .copyWith(color: Colors.black),
+        ),
+      ),
       body: SpotlightBottomNav(
-        spotlightColor: Colors.yellow,
+        spotlightColor: Colors.white,
         bottomNavCount: 5,
         icons: const [
           IconlyLight.home,
@@ -50,17 +63,11 @@ class _HomeScreenState extends State<HomeScreen> {
           CollaboratorScreen(),
           ProfileScreen(),
         ],
-        onPageChanged:
-            _onPageChanged, // Use onPageChanged to handle page changes
+        onPageChanged: (int index) {
+          _selectedIndex = index;
+          setState(() {});
+        },
       ),
-      floatingActionButton: _selectedIndex == 2
-          ? FloatingActionButton(
-              onPressed: _onAddPressed,
-              backgroundColor: Colors.yellow,
-              child: const Icon(IconlyLight.plus), // Match the spotlight color
-            )
-          : null, // Set to null when index is not 2
-      floatingActionButtonLocation: FloatingActionButtonLocation.miniStartTop,
     );
   }
 }

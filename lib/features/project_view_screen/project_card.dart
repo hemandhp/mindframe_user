@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:mindframe_user/features/project_view_screen/location_chip.dart';
+import 'package:mindframe_user/common_widget/feature_card.dart';
 
 class ProjectCard extends StatelessWidget {
   final String image;
@@ -31,7 +31,6 @@ class ProjectCard extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        width: 330,
         margin: const EdgeInsets.only(right: 16),
         decoration: BoxDecoration(
           color: Colors.black,
@@ -46,6 +45,7 @@ class ProjectCard extends StatelessWidget {
           ],
         ),
         child: Column(
+          mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Image Section
@@ -64,6 +64,7 @@ class ProjectCard extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.all(16),
               child: Column(
+                mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   // Title
@@ -122,42 +123,15 @@ class ProjectCard extends StatelessWidget {
                     ],
                   ),
                   const SizedBox(height: 15),
-                  // Location Chip
-                  Row(
+                  Wrap(
+                    spacing: 10,
+                    runSpacing: 10,
                     children: [
-                      if (needCollab) // Conditionally show "Need Collab"
-                        Material(
-                          borderRadius: BorderRadius.circular(10),
-                          color: Colors.blue,
-                          child: Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Text(
-                              'Need Collab',
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .labelSmall!
-                                  .copyWith(
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.normal),
-                            ),
-                          ),
-                        ),
-                      const SizedBox(
-                        width: 10,
-                      ),
-                      const LocationChip(location: 'Brazil'),
+                      FeatureCard(icon: Icons.currency_rupee, text: "Rupees"),
+                      FeatureCard(icon: Icons.location_city, text: "address"),
+                      FeatureCard(icon: Icons.people, text: "user"),
                     ],
                   ),
-                  // Category (Optional, displayed at the bottom)
-                  if (category != null) ...[
-                    const SizedBox(height: 16), // Spacing above the category
-                    Text(
-                      '''Category : ${category!}''',
-                      style: Theme.of(context).textTheme.labelMedium!.copyWith(
-                          color: Colors.white, fontWeight: FontWeight.normal),
-                    ),
-                    const SizedBox(height: 8), // Spacing below the category
-                  ],
                 ],
               ),
             ),
