@@ -83,6 +83,7 @@ class _SignupSecondScreenState extends State<SignupSecondScreen> {
                       height: 15,
                     ),
                     CustomImagePickerButton(
+                      borderRadius: 100,
                       height: 150,
                       width: 150,
                       onPick: (file) {
