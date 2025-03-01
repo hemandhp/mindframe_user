@@ -11,7 +11,7 @@ import 'package:mindframe_user/util/value_validator.dart';
 import 'profile_bloc/profile_bloc.dart';
 
 class ProfileEditPage extends StatefulWidget {
-  final Map profileDetails;
+  final Map? profileDetails;
   const ProfileEditPage({super.key, required this.profileDetails});
 
   @override
@@ -28,11 +28,13 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
 
   @override
   void initState() {
-    _nameController.text = widget.profileDetails['name'];
-    _phoneController.text = widget.profileDetails['phone'];
-    _bioController.text = widget.profileDetails['bio'];
-    _designationController.text = widget.profileDetails['designation'];
-    super.initState();
+    if (widget.profileDetails != null) {
+      _nameController.text = widget.profileDetails!['name'];
+      _phoneController.text = widget.profileDetails!['phone'];
+      _designationController.text = widget.profileDetails!['designation'];
+      _bioController.text = widget.profileDetails!['bio'];
+      super.initState();
+    }
   }
 
   @override
@@ -67,7 +69,7 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
                     // Profile Image Picker
                     Center(
                       child: CustomImagePickerButton(
-                        selectedImage: widget.profileDetails['photo'],
+                        selectedImage: widget.profileDetails?['photo'],
                         height: 150,
                         width: 150,
                         borderRadius: 100,
@@ -158,7 +160,7 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
                           BlocProvider.of<ProfileBloc>(context).add(
                             EditProfileEvent(
                               profile: details,
-                              profileId: widget.profileDetails['id'],
+                              profileId: widget.profileDetails!['id'],
                             ),
                           );
                         }
