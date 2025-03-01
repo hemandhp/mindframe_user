@@ -63,6 +63,7 @@ class _SignupSecondScreenState extends State<SignupSecondScreen> {
         },
         builder: (context, state) {
           return Scaffold(
+            backgroundColor: Colors.white,
             body: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: Form(
@@ -71,6 +72,7 @@ class _SignupSecondScreenState extends State<SignupSecondScreen> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    Image.asset('asset/3081627.jpg'),
                     const Text(
                       'Add profile image:',
                       style: TextStyle(
