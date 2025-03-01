@@ -68,9 +68,7 @@ class _SignupSecondScreenState extends State<SignupSecondScreen> {
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: Form(
                 key: _formKey,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                child: ListView(
                   children: [
                     Image.asset('asset/3081627.jpg'),
                     const Text(
