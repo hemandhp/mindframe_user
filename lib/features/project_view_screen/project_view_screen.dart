@@ -1,8 +1,12 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mindframe_user/common_widget/custom_search.dart';
+import 'package:mindframe_user/features/project_view_screen/blocs/categories_bloc/categories_bloc.dart';
+import 'package:mindframe_user/features/project_view_screen/blocs/projects_bloc/projects_bloc.dart';
 import 'package:mindframe_user/features/project_view_screen/project_card.dart';
-import 'package:mindframe_user/features/project_view_screen/project_detail_screen.dart';
 import 'package:mindframe_user/theme/app_theme.dart';
+import 'package:mindframe_user/util/show_error_dialog.dart';
 
 class ProjectViewScreen extends StatefulWidget {
   const ProjectViewScreen({super.key});
@@ -12,100 +16,155 @@ class ProjectViewScreen extends StatefulWidget {
 }
 
 class _ProjectViewScreenState extends State<ProjectViewScreen> {
-  int _selectedIndex = 0;
+  int? _selectedCategoryId;
+
+  final CategoriesBloc _categoriesBloc = CategoriesBloc();
+  final ProjectsBloc _projectsBloc = ProjectsBloc();
+
+  List<Map<String, dynamic>> projects = [];
+
+  @override
+  void initState() {
+    _categoriesBloc.add(CategoriesEvent());
+    _projectsBloc.add(GetProjectsEvent());
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Material(
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
-        child: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                children: [
-                  Expanded(
-                    child: CustomSearch(
-                      onSearch: (query) {},
-                    ),
-                  ),
-                  SizedBox(
-                    width: 5,
-                  ),
-                  Material(
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(15),
-                        side: const BorderSide(color: outlineColor)),
-                    child: IconButton(
-                      onPressed: () {},
-                      icon: const Icon(Icons.tune),
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 15),
-              Text(
-                'Categories',
-                style: Theme.of(context).textTheme.titleMedium!.copyWith(
-                    color: Colors.black87, fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 10),
-              SizedBox(
-                height: 60,
-                child: ListView.separated(
-                  scrollDirection: Axis.horizontal,
-                  itemBuilder: (context, index) => CategoryButton(
-                    isSelected: _selectedIndex == index,
-                    image:
-                        'https://plus.unsplash.com/premium_photo-1666529072120-4c5d9f36c74e?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-                    label: "Tech",
-                    onTap: () {
-                      _selectedIndex = index;
-                      setState(() {});
-                    },
-                  ),
-                  separatorBuilder: (context, index) => const SizedBox(
-                    width: 10,
-                  ),
-                  itemCount: 4,
-                ),
-              ),
-              const SizedBox(height: 20),
-              Text(
-                'View Projects',
-                style: Theme.of(context).textTheme.titleMedium!.copyWith(
-                    color: Colors.black87, fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 10),
-              ListView.separated(
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                scrollDirection: Axis.vertical,
-                itemBuilder: (context, index) => ProjectCard(
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const ProjectDetailScreen(),
-                      ),
-                    );
-                  },
-                  image: 'asset/54187.jpg',
-                  title: "Tesla",
-                  subtitle: 'Innovative electric car project',
-                  daysToGo: 33,
-                  totalDays: 50,
-                  needCollab: true,
-                ),
-                separatorBuilder: (context, index) => const SizedBox(
-                  height: 20,
-                ),
-                itemCount: 4,
-              ),
-            ],
-          ),
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider<CategoriesBloc>.value(
+          value: _categoriesBloc,
         ),
+        BlocProvider<ProjectsBloc>.value(
+          value: _projectsBloc,
+        ),
+      ],
+      child: BlocConsumer<CategoriesBloc, CategoriesState>(
+        listener: (context, categoryState) {
+          if (categoryState is CategoriesFailureState) {
+            showErrorDialog(context);
+          }
+        },
+        builder: (context, categoryState) {
+          return BlocConsumer<ProjectsBloc, ProjectsState>(
+            listener: (context, projectState) {
+              if (projectState is ProjectsFailureState) {
+                showErrorDialog(context);
+              } else if (projectState is ProjectsGetSuccessState) {
+                projects = projectState.projects;
+                setState(() {});
+              }
+            },
+            builder: (context, projectState) {
+              return Material(
+                child: Padding(
+                  padding: const EdgeInsets.only(
+                    left: 16,
+                    right: 16,
+                    top: 10,
+                  ),
+                  child: SingleChildScrollView(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Projects',
+                          style: Theme.of(context)
+                              .textTheme
+                              .headlineMedium!
+                              .copyWith(
+                                color: Colors.black87,
+                                fontWeight: FontWeight.bold,
+                              ),
+                        ),
+                        const SizedBox(height: 10),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: CustomSearch(
+                                onSearch: (query) {},
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 15),
+                        Text(
+                          'Categories',
+                          style: Theme.of(context)
+                              .textTheme
+                              .titleMedium!
+                              .copyWith(
+                                  color: Colors.black87,
+                                  fontWeight: FontWeight.bold),
+                        ),
+                        const SizedBox(height: 10),
+                        if (categoryState is CategoriesSuccessState)
+                          SizedBox(
+                            height: 60,
+                            child: ListView.separated(
+                              scrollDirection: Axis.horizontal,
+                              itemBuilder: (context, index) => CategoryButton(
+                                isSelected: _selectedCategoryId ==
+                                    categoryState.categories[index]['id'],
+                                image: categoryState.categories[index]
+                                    ['image_url'],
+                                label: categoryState.categories[index]['name'],
+                                onTap: () {
+                                  if (_selectedCategoryId ==
+                                      categoryState.categories[index]['id']) {
+                                    _selectedCategoryId = null;
+                                  } else {
+                                    _selectedCategoryId =
+                                        categoryState.categories[index]['id'];
+                                  }
+                                  setState(() {});
+                                },
+                              ),
+                              separatorBuilder: (context, index) =>
+                                  const SizedBox(
+                                width: 10,
+                              ),
+                              itemCount: categoryState.categories.length,
+                            ),
+                          )
+                        else
+                          const Padding(
+                            padding: EdgeInsets.all(15.0),
+                            child: CupertinoActivityIndicator(),
+                          ),
+                        const SizedBox(height: 20),
+                        Text(
+                          'View Projects',
+                          style: Theme.of(context)
+                              .textTheme
+                              .titleMedium!
+                              .copyWith(
+                                  color: Colors.black87,
+                                  fontWeight: FontWeight.bold),
+                        ),
+                        const SizedBox(height: 10),
+                        ListView.separated(
+                          shrinkWrap: true,
+                          physics: const NeverScrollableScrollPhysics(),
+                          scrollDirection: Axis.vertical,
+                          itemBuilder: (context, index) => ProjectCard(
+                            projectDetails: projects[index],
+                          ),
+                          separatorBuilder: (context, index) => const SizedBox(
+                            height: 20,
+                          ),
+                          itemCount: projects.length,
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              );
+            },
+          );
+        },
       ),
     );
   }

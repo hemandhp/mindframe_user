@@ -15,58 +15,38 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  int _selectedIndex = 0;
-
-  String titleName(int index) {
-    switch (index) {
-      case 0:
-        return 'Home';
-      case 1:
-        return 'Funding';
-      case 2:
-        return 'My Projects';
-      case 3:
-        return 'Collabs';
-      case 4:
-        return 'Profile';
-    }
-    return "";
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
+        backgroundColor: Colors.white,
+        centerTitle: false,
         title: Text(
-          titleName(_selectedIndex),
+          'MindFrame',
           style: Theme.of(context)
               .textTheme
               .titleLarge!
               .copyWith(color: Colors.black),
         ),
       ),
-      body: SpotlightBottomNav(
+      body: const SpotlightBottomNav(
         spotlightColor: Colors.white,
         bottomNavCount: 5,
-        icons: const [
+        icons: [
           IconlyLight.home,
           IconlyLight.activity,
           IconlyLight.plus,
           IconlyLight.info_square,
           IconlyLight.profile,
         ],
-        pages: const [
+        pages: [
           ProjectViewScreen(),
           FundingPageScreen(),
           MyProjectScreen(),
           CollaboratorScreen(),
           ProfileScreen(),
         ],
-        onPageChanged: (int index) {
-          _selectedIndex = index;
-          setState(() {});
-        },
       ),
     );
   }

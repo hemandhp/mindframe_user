@@ -127,6 +127,8 @@ class _SignupSecondScreenState extends State<SignupSecondScreen> {
                     ),
                     CustomTextFormField(
                       labelText: 'Bio',
+                      minLines: 3,
+                      maxLines: 5,
                       controller: _bioController,
                       validator: notEmptyValidator,
                       isLoading: state is SignUpLoadingState,

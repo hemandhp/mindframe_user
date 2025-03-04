@@ -93,10 +93,11 @@ class _ConfirmationScreenState extends State<ConfirmationScreen> {
                   child: ElevatedButton(
                     onPressed: () {
                       Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const SigninScreen(),
-                          ));
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const SigninScreen(),
+                        ),
+                      );
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.white,
@@ -126,7 +127,7 @@ class _ConfirmationScreenState extends State<ConfirmationScreen> {
                           ));
                     },
                     child: const Text(
-                      '''Did'nt have an Account! Signup?''',
+                      '''Don't have an Account? Signup''',
                       style: TextStyle(
                         color: Colors.white,
                         fontSize: 16,

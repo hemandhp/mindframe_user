@@ -82,6 +82,7 @@ class _SignupScreenState extends State<SignupScreen> {
               backgroundColor: Colors.white,
               body: Center(
                 child: Form(
+                  autovalidateMode: AutovalidateMode.onUserInteraction,
                   key: _formkey,
                   child: SingleChildScrollView(
                     child: Padding(
@@ -102,7 +103,7 @@ class _SignupScreenState extends State<SignupScreen> {
                             height: 20,
                           ),
                           CustomTextFormField(
-                            labelText: 'Username',
+                            labelText: 'Name',
                             controller: _nameController,
                             validator: notEmptyValidator,
                             isLoading: state is SignUpLoadingState,
@@ -120,23 +121,38 @@ class _SignupScreenState extends State<SignupScreen> {
                             height: 10,
                           ),
                           TextFormField(
-                              enabled: state is! SignUpLoadingState,
-                              controller: _passwordController,
-                              obscureText: isObscure,
-                              validator: passwordValidator,
-                              decoration: InputDecoration(
-                                suffixIcon: IconButton(
-                                    onPressed: () {
-                                      isObscure = !isObscure;
-                                      setState(() {});
-                                    },
-                                    icon: Icon(isObscure
-                                        ? Icons.visibility_off
-                                        : Icons.visibility)),
-                                border: const OutlineInputBorder(),
-                                hintText: 'Password',
-                              )),
-                          SizedBox(height: 10),
+                            enabled: state is! SignUpLoadingState,
+                            controller: _passwordController,
+                            obscureText: isObscure,
+                            validator: passwordValidator,
+                            decoration: InputDecoration(
+                              suffixIcon: IconButton(
+                                  onPressed: () {
+                                    isObscure = !isObscure;
+                                    setState(() {});
+                                  },
+                                  icon: Icon(isObscure
+                                      ? Icons.visibility_off
+                                      : Icons.visibility)),
+                              border: const OutlineInputBorder(),
+                              hintText: 'Password',
+                            ),
+                          ),
+                          const SizedBox(
+                            height: 10,
+                          ),
+                          TextFormField(
+                            enabled: state is! SignUpLoadingState,
+                            obscureText: isObscure,
+                            validator: (value) {
+                              return confirmPasswordValidator(
+                                  value, _passwordController.text.trim());
+                            },
+                            decoration: const InputDecoration(
+                              hintText: 'Confirm Password',
+                            ),
+                          ),
+                          const SizedBox(height: 10),
                           CustomTextFormField(
                             labelText: 'Phone No.',
                             controller: _phoneController,

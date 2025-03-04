@@ -46,6 +46,7 @@ dependencies:
   permission_handler: ^11.3.1
   iconly: ^1.0.1
   spotlight_bottom_navbar: ^0.0.6
+  image_picker: ^1.1.2
 
 dev_dependencies:
   flutter_test:

@@ -1,0 +1,2 @@
+/Users/arjunraj/Documents/Work/college project 25/mindframe/mindframe_user/android/app/.cxx/Debug/1v134o31/x86_64/CMakeFiles/edit_cache.dir
+/Users/arjunraj/Documents/Work/college project 25/mindframe/mindframe_user/android/app/.cxx/Debug/1v134o31/x86_64/CMakeFiles/rebuild_cache.dir
