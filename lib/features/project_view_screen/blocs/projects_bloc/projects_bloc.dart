@@ -1,6 +1,10 @@
+import 'dart:io';
+
 import 'package:bloc/bloc.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:logger/web.dart';
 import 'package:meta/meta.dart';
+import 'package:mindframe_user/util/file_upload.dart';
 import 'package:mindframe_user/values/strings.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -29,12 +33,39 @@ class ProjectsBloc extends Bloc<ProjectsEvent, ProjectsState> {
           emit(ProjectsGetSuccessState(projects: projects));
         } else if (event is AddProjectEvent) {
           emit(ProjectsLoadingState());
-          event.projectDetails['added_by'] =
+
+          XFile image = event.projectDetails['image'];
+          File imageFile = File(image.path);
+          String uploadedPath = await uploadFile(
+            'project',
+            imageFile,
+            image.name + DateTime.now().toString() + image.path.split('.').last,
+          );
+
+          event.projectDetails['image_url'] = uploadedPath;
+          event.projectDetails['user_id'] =
               Supabase.instance.client.auth.currentUser!.id;
+
+          event.projectDetails.remove('image');
           await table.insert(event.projectDetails);
           emit(ProjectsSuccessState());
         } else if (event is EditProjectEvent) {
           emit(ProjectsLoadingState());
+
+          if (event.projectDetails['image'] != null) {
+            XFile image = event.projectDetails['image'];
+            File imageFile = File(image.path);
+            String uploadedPath = await uploadFile(
+              'project',
+              imageFile,
+              image.name +
+                  DateTime.now().toString() +
+                  image.path.split('.').last,
+            );
+
+            event.projectDetails['image_url'] = uploadedPath;
+            event.projectDetails.remove('image');
+          }
           await table.update(event.projectDetails).eq('id', event.projectId);
           emit(ProjectsSuccessState());
         } else if (event is DeleteProjectEvent) {

@@ -288,23 +288,29 @@ class _AddProjectScreenState extends State<AddProjectScreen> {
                       const Divider(height: 30),
                       CustomButton(
                         label: 'Add Project',
+                        isLoading: projectState is ProjectsLoadingState,
                         inverse: true,
                         onPressed: () {
                           if (_formKey.currentState!.validate()) {
                             if (country != null &&
                                 _selectedCategoryId != null &&
                                 _coverImage != null) {
-                              //
-                              // _projectsBloc.add(
-                              //   AddProjectEvent(projectDetails: {
-                              //     'name': _projectNameController.text,
-                              //     'description': _descriptionController.text,
-                              //     'categoryId': _selectedCategoryId,
-                              //     'country': country,
-                              //     'coverImage': _coverImage,
-                              //     'fundingRequired': _fundingRequired,
-                              //   }),
-                              // );
+                              _projectsBloc.add(
+                                AddProjectEvent(
+                                  projectDetails: {
+                                    'title': _projectNameController.text,
+                                    'description': _descriptionController.text,
+                                    'category_id': _selectedCategoryId,
+                                    'image': _coverImage,
+                                    'fund_required': _fundingRequired
+                                        ? int.tryParse(
+                                                _fundController.text.trim()) ??
+                                            0
+                                        : null,
+                                    ...country!
+                                  },
+                                ),
+                              );
                             } else {
                               showErrorDialog(
                                 context,
