@@ -32,6 +32,7 @@ class _AddProjectScreenState extends State<AddProjectScreen> {
   final TextEditingController _projectNameController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
   final TextEditingController _fundController = TextEditingController();
+  final TextEditingController _fundedController = TextEditingController();
   final TextEditingController _whatsappController = TextEditingController();
   final TextEditingController _fundUrlController = TextEditingController();
 
@@ -42,7 +43,7 @@ class _AddProjectScreenState extends State<AddProjectScreen> {
 
   Map? country;
 
-  List<Map<String, dynamic>> requirements = [];
+  List requirements = [];
 
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
@@ -64,6 +65,9 @@ class _AddProjectScreenState extends State<AddProjectScreen> {
           : '';
       _fundController.text = widget.projectDetails!['fund_required'] != null
           ? widget.projectDetails!['fund_required'].toString()
+          : '';
+      _fundedController.text = widget.projectDetails!['funded_amount'] != null
+          ? widget.projectDetails!['funded_amount'].toString()
           : '';
       _fundUrlController.text = widget.projectDetails!['fund_url'] != null
           ? widget.projectDetails!['fund_url'].toString()
@@ -441,6 +445,17 @@ class _AddProjectScreenState extends State<AddProjectScreen> {
                         Padding(
                           padding: const EdgeInsets.only(top: 10),
                           child: TextFormField(
+                            controller: _fundedController,
+                            validator: numericValidator,
+                            decoration: const InputDecoration(
+                              labelText: 'Funded Amount',
+                            ),
+                          ),
+                        ),
+                      if (_fundingRequired)
+                        Padding(
+                          padding: const EdgeInsets.only(top: 10),
+                          child: TextFormField(
                             controller: _fundUrlController,
                             validator: urlValidator,
                             decoration: const InputDecoration(
@@ -486,6 +501,11 @@ class _AddProjectScreenState extends State<AddProjectScreen> {
                                                   .trim()) ??
                                               0
                                           : null,
+                                      'funded_amount': _fundingRequired
+                                          ? int.tryParse(_fundedController.text
+                                                  .trim()) ??
+                                              0
+                                          : null,
                                       'fund_url': _fundingRequired
                                           ? _fundUrlController.text.trim()
                                           : null,
@@ -508,6 +528,11 @@ class _AddProjectScreenState extends State<AddProjectScreen> {
                                           : null,
                                       'fund_required': _fundingRequired
                                           ? int.tryParse(_fundController.text
+                                                  .trim()) ??
+                                              0
+                                          : null,
+                                      'funded_amount': _fundingRequired
+                                          ? int.tryParse(_fundedController.text
                                                   .trim()) ??
                                               0
                                           : null,
