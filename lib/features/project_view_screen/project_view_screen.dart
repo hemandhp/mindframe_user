@@ -52,6 +52,8 @@ class _ProjectViewScreenState extends State<ProjectViewScreen> {
             listener: (context, projectState) {
               if (projectState is ProjectsFailureState) {
                 showErrorDialog(context);
+              } else if (projectState is ProjectsSuccessState) {
+                _projectsBloc.add(GetProjectsEvent());
               } else if (projectState is ProjectsGetSuccessState) {
                 projects = projectState.projects;
                 setState(() {});
@@ -162,6 +164,7 @@ class _ProjectViewScreenState extends State<ProjectViewScreen> {
                             scrollDirection: Axis.vertical,
                             itemBuilder: (context, index) => ProjectCard(
                               projectDetails: projects[index],
+                              myProjectBloc: _projectsBloc,
                             ),
                             separatorBuilder: (context, index) =>
                                 const SizedBox(

@@ -92,6 +92,7 @@ class _MyProjectScreenState extends State<MyProjectScreen> {
                         scrollDirection: Axis.vertical,
                         itemBuilder: (context, index) => ProjectCard(
                           projectDetails: projectsState.projects[index],
+                          myProjectBloc: _projectsBloc,
                         ),
                         separatorBuilder: (context, index) => const SizedBox(
                           height: 20,

@@ -1,36 +1,29 @@
 import 'package:flutter/material.dart';
 import 'package:mindframe_user/common_widget/custom_button.dart';
+import 'package:mindframe_user/features/my_projects/add_project_screen.dart';
+import 'package:mindframe_user/features/project_view_screen/blocs/projects_bloc/projects_bloc.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class ProjectDetailScreen extends StatefulWidget {
-  const ProjectDetailScreen({super.key});
+  final Map<String, dynamic> projectDetails;
+  final ProjectsBloc myProjectBloc;
+  const ProjectDetailScreen(
+      {super.key, required this.projectDetails, required this.myProjectBloc});
 
   @override
   _ProjectDetailScreenState createState() => _ProjectDetailScreenState();
 }
 
 class _ProjectDetailScreenState extends State<ProjectDetailScreen> {
-  bool _isExpanded = false;
-  final String description =
-      '''Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.''';
-
-  final List<Map<String, dynamic>> reviews = [
-    {'name': 'John Doe', 'comment': 'Great project!', 'rating': 5.0},
-    {
-      'name': 'Jane Smith',
-      'comment': 'Very useful and well designed.',
-      'rating': 4.5
-    },
-    {'name': 'Alice Brown', 'comment': 'Highly recommended!', 'rating': 4.0},
-  ];
-
-  void _addReview(String name, String comment, double rating) {
-    setState(() {
-      reviews.add({'name': name, 'comment': comment, 'rating': rating});
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
+    int progressPercentage = 0;
+    double progress = 0;
+    if (widget.projectDetails['fund_required'] != null) {
+      progress = widget.projectDetails['funded_amount'] /
+          widget.projectDetails['fund_required'];
+      progressPercentage = (progress * 100).round(); // Calculate percentage
+    }
     return Scaffold(
       backgroundColor: Colors.white,
       extendBodyBehindAppBar: true,
@@ -59,7 +52,7 @@ class _ProjectDetailScreenState extends State<ProjectDetailScreen> {
                 bottom: Radius.circular(16),
               ),
               child: Image.network(
-                'https://iotcircuithub.com/wp-content/uploads/2021/07/Arduino-IoT-Cloud-ESP32-Alexa-15.jpg',
+                widget.projectDetails['image_url'],
                 height: 290,
                 width: double.infinity,
                 fit: BoxFit.cover,
@@ -76,153 +69,198 @@ class _ProjectDetailScreenState extends State<ProjectDetailScreen> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        'Project name',
+                        widget.projectDetails['title'],
                         style: Theme.of(context)
                             .textTheme
                             .headlineSmall!
                             .copyWith(fontWeight: FontWeight.normal),
                       ),
-                      Row(
-                        children: [
-                          const Icon(Icons.star_rounded,
-                              color: Colors.amber, size: 20),
-                          const SizedBox(width: 4),
-                          Text(
-                            '5.0',
-                            style: Theme.of(context)
-                                .textTheme
-                                .titleSmall!
-                                .copyWith(
-                                    color: Colors.black,
-                                    fontWeight: FontWeight.w500),
-                          ),
-                          const SizedBox(width: 8),
-                          Text(
-                            '(143 reviews)',
-                            style: Theme.of(context)
-                                .textTheme
-                                .titleSmall!
-                                .copyWith(
-                                    color: Colors.black,
-                                    fontWeight: FontWeight.w500),
-                          ),
-                        ],
-                      ),
                     ],
                   ),
-
-                  const SizedBox(height: 20),
-
-                  // Location Chip
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      SizedBox(
-                        width: 125,
-                        child: CustomButton(
-                          onPressed: () {},
-                          iconData: Icons.person_add,
-                          label: 'Add Collab',
-                        ),
-                      )
-                    ],
-                  ),
-
-                  const SizedBox(height: 15),
-
-                  // Description with Read More/Less
-                  Text(
-                    description,
-                    maxLines: _isExpanded ? null : 3,
-                    overflow: _isExpanded
-                        ? TextOverflow.visible
-                        : TextOverflow.ellipsis,
-                    style: const TextStyle(fontSize: 14, color: Colors.grey),
-                  ),
-                  TextButton(
-                    onPressed: () {
-                      setState(() {
-                        _isExpanded = !_isExpanded;
-                      });
-                    },
+                  Padding(
+                    padding: const EdgeInsets.only(top: 5),
                     child: Text(
-                      _isExpanded ? 'Read Less' : 'Read More',
-                      style: const TextStyle(
-                          decoration: TextDecoration.underline,
-                          decorationThickness: 2),
+                      widget.projectDetails['city'] +
+                          ', ' +
+                          widget.projectDetails['district'] +
+                          ', ' +
+                          widget.projectDetails['state'] +
+                          widget.projectDetails['country'],
+                      style: const TextStyle(fontSize: 14, color: Colors.black),
                     ),
                   ),
 
-                  const SizedBox(height: 20),
-                  CustomButton(
-                    inverse: true,
-                    onPressed: () {},
-                    label: 'Givv Fundd',
-                  ),
+                  const SizedBox(height: 5),
 
-                  const SizedBox(height: 15),
-                  // Add Review Button
-                  CustomButton(
-                    onPressed: () {
-                      showDialog(
-                        context: context,
-                        builder: (context) =>
-                            ReviewDialog(onSubmit: _addReview),
-                      );
-                    },
-                    label: 'Add Review',
-                  ),
-
-                  const SizedBox(height: 20),
-
-                  // User Reviews Section
+                  // Description with Read More/Less
                   Text(
-                    'User Reviews',
-                    style: Theme.of(context).textTheme.titleMedium!.copyWith(
-                        color: Colors.black, fontWeight: FontWeight.bold),
+                    widget.projectDetails['description'],
+                    style: const TextStyle(fontSize: 14, color: Colors.grey),
                   ),
 
-                  // Reviews List
-                  ListView.builder(
-                    padding: EdgeInsets.all(0),
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-                    itemCount: reviews.length,
-                    itemBuilder: (context, index) {
-                      final review = reviews[index];
-                      return ListTile(
-                        leading: const CircleAvatar(
-                          child: Icon(Icons.person),
+                  const SizedBox(height: 5),
+
+                  if (widget.projectDetails['fund_required'] != null)
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const SizedBox(height: 16),
+                        LinearProgressIndicator(
+                          value: progress.clamp(0.0, 1.0),
+                          backgroundColor: Colors.grey[800],
+                          valueColor:
+                              const AlwaysStoppedAnimation<Color>(Colors.green),
                         ),
-                        title: Row(
+                        const SizedBox(height: 8),
+                        // Days to Go and Funded Text
+                        Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Text(
-                              review['name'],
+                              '${widget.projectDetails['fund_required']} fund required',
                               style: Theme.of(context)
                                   .textTheme
-                                  .titleSmall!
-                                  .copyWith(
-                                      color: Colors.black,
-                                      fontWeight: FontWeight.bold),
+                                  .bodySmall!
+                                  .copyWith(color: Colors.grey[400]),
                             ),
-                            Row(
-                              children: List.generate(5, (i) {
-                                return Icon(
-                                  i < review['rating']
-                                      ? Icons.star
-                                      : Icons.star_border,
-                                  color: Colors.amber,
-                                  size: 16,
-                                );
-                              }),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.end,
+                              children: [
+                                Text(
+                                  '$progressPercentage% funded', // Display percentage
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .bodySmall!
+                                      .copyWith(
+                                          color: Colors.green,
+                                          fontWeight: FontWeight.bold),
+                                ),
+                              ],
                             ),
                           ],
                         ),
-                        subtitle: Text(review['comment']),
-                      );
-                    },
-                  ),
+                      ],
+                    ),
+
+                  if (Supabase.instance.client.auth.currentUser!.id ==
+                      widget.projectDetails['user_id'])
+                    Padding(
+                      padding: const EdgeInsets.only(top: 10),
+                      child: CustomButton(
+                        inverse: true,
+                        backGroundColor: Colors.deepOrange,
+                        onPressed: () {
+                          Navigator.of(context).pushReplacement(
+                            MaterialPageRoute(
+                              builder: (context) => AddProjectScreen(
+                                projectDetails: widget.projectDetails,
+                                myProjectBloc: widget.myProjectBloc,
+                              ),
+                            ),
+                          );
+                        },
+                        label: 'Edit Project',
+                      ),
+                    ),
+
+                  if (Supabase.instance.client.auth.currentUser!.id ==
+                      widget.projectDetails['user_id'])
+                    Padding(
+                      padding: const EdgeInsets.only(top: 10),
+                      child: CustomButton(
+                        inverse: true,
+                        backGroundColor: Colors.red,
+                        onPressed: () {
+                          widget.myProjectBloc.add(DeleteProjectEvent(
+                              projectId: widget.projectDetails['id']));
+                          Navigator.of(context).pop();
+                        },
+                        label: 'Delete Project',
+                      ),
+                    ),
+
+                  if (Supabase.instance.client.auth.currentUser!.id !=
+                      widget.projectDetails['user_id'])
+
+                    // Location Chip
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        SizedBox(
+                          width: 125,
+                          child: CustomButton(
+                            onPressed: () {},
+                            iconData: Icons.person_add,
+                            label: 'Add Collab',
+                          ),
+                        )
+                      ],
+                    ),
+
+                  const SizedBox(height: 5),
+
+                  if (widget.projectDetails['user_id'] !=
+                      Supabase.instance.client.auth.currentUser!.id)
+                    Padding(
+                      padding: const EdgeInsets.only(top: 15),
+                      child: CustomButton(
+                        inverse: true,
+                        onPressed: () {},
+                        label: 'Fund Project',
+                      ),
+                    ),
+
+                  // Add Review Button
+                  // CustomButton(
+                  //   onPressed: () {
+                  //     showDialog(
+                  //       context: context,
+                  //       builder: (context) =>
+                  //           ReviewDialog(onSubmit: _addReview),
+                  //     );
+                  //   },
+                  //   label: 'Add Feedback',
+                  // ),
+
+                  // const SizedBox(height: 20),
+
+                  // User Reviews Section
+                  // Text(
+                  //   'User Feedbacks',
+                  //   style: Theme.of(context).textTheme.titleMedium!.copyWith(
+                  //       color: Colors.black, fontWeight: FontWeight.bold),
+                  // ),
+
+                  // Reviews List
+                  // ListView.builder(
+                  //   padding: const EdgeInsets.all(0),
+                  //   shrinkWrap: true,
+                  //   physics: const NeverScrollableScrollPhysics(),
+                  //   itemCount: reviews.length,
+                  //   itemBuilder: (context, index) {
+                  //     final review = reviews[index];
+                  //     return ListTile(
+                  //       leading: const CircleAvatar(
+                  //         child: Icon(Icons.person),
+                  //       ),
+                  //       title: Row(
+                  //         mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  //         children: [
+                  //           Text(
+                  //             review['name'],
+                  //             style: Theme.of(context)
+                  //                 .textTheme
+                  //                 .titleSmall!
+                  //                 .copyWith(
+                  //                     color: Colors.black,
+                  //                     fontWeight: FontWeight.bold),
+                  //           ),
+                  //         ],
+                  //       ),
+                  //       subtitle: Text(review['comment']),
+                  //     );
+                  //   },
+                  // ),
                 ],
               ),
             ),

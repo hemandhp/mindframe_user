@@ -1,13 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:mindframe_user/common_widget/custom_button.dart';
+import 'package:mindframe_user/features/project_view_screen/blocs/projects_bloc/projects_bloc.dart';
 import 'package:mindframe_user/features/project_view_screen/project_detail_screen.dart';
 
 class ProjectCard extends StatelessWidget {
   final Map<String, dynamic> projectDetails;
+  final ProjectsBloc myProjectBloc;
 
   const ProjectCard({
     super.key,
     required this.projectDetails,
+    required this.myProjectBloc,
   });
 
   @override
@@ -166,7 +169,10 @@ class ProjectCard extends StatelessWidget {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => const ProjectDetailScreen(),
+                              builder: (context) => ProjectDetailScreen(
+                                projectDetails: projectDetails,
+                                myProjectBloc: myProjectBloc,
+                              ),
                             ),
                           );
                         },

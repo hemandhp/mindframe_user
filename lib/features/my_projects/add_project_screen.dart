@@ -14,9 +14,11 @@ import 'package:mindframe_user/values/countries.dart';
 
 class AddProjectScreen extends StatefulWidget {
   final ProjectsBloc myProjectBloc;
+  final Map<String, dynamic>? projectDetails;
   const AddProjectScreen({
     super.key,
     required this.myProjectBloc,
+    this.projectDetails,
   });
 
   @override
@@ -43,6 +45,23 @@ class _AddProjectScreenState extends State<AddProjectScreen> {
   @override
   void initState() {
     _categoriesBloc.add(CategoriesEvent());
+
+    if (widget.projectDetails != null) {
+      _projectNameController.text = widget.projectDetails!['title'];
+      _descriptionController.text = widget.projectDetails!['description'];
+      _selectedCategoryId = widget.projectDetails!['category_id'];
+      _fundingRequired = widget.projectDetails!['fund_required'] != null;
+      _fundController.text = widget.projectDetails!['fund_required'] != null
+          ? widget.projectDetails!['fund_required'].toString()
+          : '';
+      country = {
+        'country': widget.projectDetails!['country'],
+        'state': widget.projectDetails!['state'],
+        'district': widget.projectDetails!['district'],
+        'city': widget.projectDetails!['city'],
+      };
+    }
+
     super.initState();
   }
 
@@ -74,7 +93,7 @@ class _AddProjectScreenState extends State<AddProjectScreen> {
                   context: context,
                   builder: (context) => const CustomAlertDialog(
                     title: 'Success',
-                    description: 'Project added successfully',
+                    description: 'Project Saved successfully',
                     primaryButton: 'Ok',
                   ),
                 );
@@ -122,21 +141,29 @@ class _AddProjectScreenState extends State<AddProjectScreen> {
                             height:
                                 (MediaQuery.of(context).size.width - 40) / 2,
                             width: double.maxFinite,
-                            child: _coverImage != null
+                            child: widget.projectDetails != null
                                 ? ClipRRect(
                                     borderRadius: BorderRadius.circular(15),
-                                    child: Image.file(
-                                      File(
-                                        _coverImage!.path,
-                                      ),
+                                    child: Image.network(
+                                      widget.projectDetails!['image_url'],
                                       fit: BoxFit.cover,
                                     ),
                                   )
-                                : const Icon(
-                                    size: 50,
-                                    Icons.add_photo_alternate,
-                                    color: Colors.grey,
-                                  ),
+                                : _coverImage != null
+                                    ? ClipRRect(
+                                        borderRadius: BorderRadius.circular(15),
+                                        child: Image.file(
+                                          File(
+                                            _coverImage!.path,
+                                          ),
+                                          fit: BoxFit.cover,
+                                        ),
+                                      )
+                                    : const Icon(
+                                        size: 50,
+                                        Icons.add_photo_alternate,
+                                        color: Colors.grey,
+                                      ),
                           ),
                         ),
                       ),
@@ -287,30 +314,53 @@ class _AddProjectScreenState extends State<AddProjectScreen> {
                       ),
                       const Divider(height: 30),
                       CustomButton(
-                        label: 'Add Project',
+                        label: 'Save Project',
                         isLoading: projectState is ProjectsLoadingState,
                         inverse: true,
                         onPressed: () {
                           if (_formKey.currentState!.validate()) {
                             if (country != null &&
                                 _selectedCategoryId != null &&
-                                _coverImage != null) {
-                              _projectsBloc.add(
-                                AddProjectEvent(
-                                  projectDetails: {
-                                    'title': _projectNameController.text,
-                                    'description': _descriptionController.text,
-                                    'category_id': _selectedCategoryId,
-                                    'image': _coverImage,
-                                    'fund_required': _fundingRequired
-                                        ? int.tryParse(
-                                                _fundController.text.trim()) ??
-                                            0
-                                        : null,
-                                    ...country!
-                                  },
-                                ),
-                              );
+                                (widget.projectDetails != null ||
+                                    _coverImage != null)) {
+                              if (widget.projectDetails != null) {
+                                _projectsBloc.add(
+                                  EditProjectEvent(
+                                    projectId: widget.projectDetails!['id'],
+                                    projectDetails: {
+                                      'title': _projectNameController.text,
+                                      'description':
+                                          _descriptionController.text,
+                                      'category_id': _selectedCategoryId,
+                                      'image': _coverImage,
+                                      'fund_required': _fundingRequired
+                                          ? int.tryParse(_fundController.text
+                                                  .trim()) ??
+                                              0
+                                          : null,
+                                      ...country!
+                                    },
+                                  ),
+                                );
+                              } else {
+                                _projectsBloc.add(
+                                  AddProjectEvent(
+                                    projectDetails: {
+                                      'title': _projectNameController.text,
+                                      'description':
+                                          _descriptionController.text,
+                                      'category_id': _selectedCategoryId,
+                                      'image': _coverImage,
+                                      'fund_required': _fundingRequired
+                                          ? int.tryParse(_fundController.text
+                                                  .trim()) ??
+                                              0
+                                          : null,
+                                      ...country!
+                                    },
+                                  ),
+                                );
+                              }
                             } else {
                               showErrorDialog(
                                 context,

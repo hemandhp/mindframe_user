@@ -73,14 +73,16 @@ class ProjectsBloc extends Bloc<ProjectsEvent, ProjectsState> {
             );
 
             event.projectDetails['image_url'] = uploadedPath;
-            event.projectDetails.remove('image');
           }
+          event.projectDetails.remove('image');
+
           await table.update(event.projectDetails).eq('id', event.projectId);
           emit(ProjectsSuccessState());
         } else if (event is DeleteProjectEvent) {
           emit(ProjectsLoadingState());
           await table.delete().eq('id', event.projectId);
           emit(ProjectsSuccessState());
+          add(GetMyProjectsEvent());
         } else if (event is FundProjectEvent) {
           emit(ProjectsLoadingState());
           final response = await table
