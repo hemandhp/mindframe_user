@@ -138,7 +138,7 @@ class _ProjectViewScreenState extends State<ProjectViewScreen> {
                           ),
                         const SizedBox(height: 20),
                         Text(
-                          'View Projects',
+                          'Projects',
                           style: Theme.of(context)
                               .textTheme
                               .titleMedium!

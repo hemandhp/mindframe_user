@@ -27,8 +27,13 @@ class ProjectsBloc extends Bloc<ProjectsEvent, ProjectsState> {
             query = query.eq('category_id', event.categoryId!);
           }
 
+          if (event.isFundingPage) {
+            query = query.gt('fund_required', 0);
+          }
+
           List<Map<String, dynamic>> projects = await query
               .neq('user_id', Supabase.instance.client.auth.currentUser!.id)
+              .eq('status', 'approved')
               .order('created_at', ascending: false);
 
           emit(ProjectsGetSuccessState(projects: projects));

@@ -5,8 +5,9 @@ sealed class ProjectsEvent {}
 
 class GetProjectsEvent extends ProjectsEvent {
   final int? categoryId;
+  final bool isFundingPage;
 
-  GetProjectsEvent({this.categoryId});
+  GetProjectsEvent({this.categoryId, this.isFundingPage = false});
 }
 
 class GetMyProjectsEvent extends ProjectsEvent {}
