@@ -81,16 +81,16 @@ class _ProjectViewScreenState extends State<ProjectViewScreen> {
                                 fontWeight: FontWeight.bold,
                               ),
                         ),
-                        const SizedBox(height: 10),
-                        Row(
-                          children: [
-                            Expanded(
-                              child: CustomSearch(
-                                onSearch: (query) {},
-                              ),
-                            ),
-                          ],
-                        ),
+                        // const SizedBox(height: 10),
+                        // Row(
+                        //   children: [
+                        //     Expanded(
+                        //       child: CustomSearch(
+                        //         onSearch: (query) {},
+                        //       ),
+                        //     ),
+                        //   ],
+                        // ),
                         const SizedBox(height: 15),
                         Text(
                           'Categories',
@@ -160,6 +160,7 @@ class _ProjectViewScreenState extends State<ProjectViewScreen> {
                         else
                           ListView.separated(
                             shrinkWrap: true,
+                            padding: EdgeInsets.only(bottom: 100),
                             physics: const NeverScrollableScrollPhysics(),
                             scrollDirection: Axis.vertical,
                             itemBuilder: (context, index) => ProjectCard(

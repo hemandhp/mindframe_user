@@ -32,19 +32,19 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
       body: const SpotlightBottomNav(
         spotlightColor: Colors.white,
-        bottomNavCount: 5,
+        bottomNavCount: 4,
         icons: [
           IconlyLight.home,
           IconlyLight.activity,
           IconlyLight.plus,
-          IconlyLight.info_square,
+          // IconlyLight.info_square,
           IconlyLight.profile,
         ],
         pages: [
           ProjectViewScreen(),
           FundingPageScreen(),
           MyProjectScreen(),
-          CollaboratorScreen(),
+          // CollaboratorScreen(),
           ProfileScreen(),
         ],
       ),

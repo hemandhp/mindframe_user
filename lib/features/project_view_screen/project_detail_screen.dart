@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:mindframe_user/common_widget/custom_alert_dialog.dart';
 import 'package:mindframe_user/common_widget/custom_button.dart';
 import 'package:mindframe_user/features/my_projects/add_project_screen.dart';
 import 'package:mindframe_user/features/project_view_screen/blocs/projects_bloc/projects_bloc.dart';
+import 'package:mindframe_user/util/show_error_dialog.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:url_launcher/url_launcher.dart';
+import 'package:url_launcher/url_launcher_string.dart';
 
 class ProjectDetailScreen extends StatefulWidget {
   final Map<String, dynamic> projectDetails;
@@ -98,7 +102,44 @@ class _ProjectDetailScreenState extends State<ProjectDetailScreen> {
                     style: const TextStyle(fontSize: 14, color: Colors.grey),
                   ),
 
-                  const SizedBox(height: 5),
+                  if (widget.projectDetails['requirements'] != null)
+                    const SizedBox(height: 20),
+                  if (widget.projectDetails['requirements'] != null)
+                    Text(
+                      'Requirements',
+                      style: Theme.of(context).textTheme.titleMedium!.copyWith(
+                            color: Colors.black87,
+                            fontWeight: FontWeight.bold,
+                          ),
+                    ),
+                  const SizedBox(height: 10),
+                  if (widget.projectDetails['requirements'] != null)
+                    ListView.separated(
+                      padding: EdgeInsets.zero,
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      itemBuilder: (context, index) => Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 0),
+                        child: Row(
+                          children: [
+                            Expanded(
+                                child: Text(
+                              widget.projectDetails['requirements'][index]
+                                  ['name'],
+                            )),
+                            Text(
+                              widget.projectDetails['requirements'][index]
+                                  ['quantity'],
+                            ),
+                          ],
+                        ),
+                      ),
+                      separatorBuilder: (context, index) =>
+                          const SizedBox(height: 10),
+                      itemCount: widget.projectDetails['requirements'].length,
+                    ),
+
+                  const SizedBox(height: 10),
 
                   if (widget.projectDetails['fund_required'] != null)
                     Column(
@@ -139,6 +180,8 @@ class _ProjectDetailScreenState extends State<ProjectDetailScreen> {
                             ),
                           ],
                         ),
+
+                        const SizedBox(height: 25),
                       ],
                     ),
 
@@ -180,19 +223,80 @@ class _ProjectDetailScreenState extends State<ProjectDetailScreen> {
                     ),
 
                   if (Supabase.instance.client.auth.currentUser!.id !=
-                      widget.projectDetails['user_id'])
+                          widget.projectDetails['user_id'] &&
+                      widget.projectDetails['whatsapp'] != null)
 
                     // Location Chip
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        SizedBox(
-                          width: 125,
-                          child: CustomButton(
-                            onPressed: () {},
-                            iconData: Icons.person_add,
-                            label: 'Add Collab',
-                          ),
+                        CustomButton(
+                          onPressed: () async {
+                            final Map<String, dynamic>? details =
+                                await showDialog(
+                                    context: context,
+                                    builder: (context) {
+                                      TextEditingController _nameController =
+                                          TextEditingController();
+                                      TextEditingController _description =
+                                          TextEditingController();
+
+                                      return CustomAlertDialog(
+                                        title: 'Application to Collab',
+                                        content: Column(
+                                          children: [
+                                            TextFormField(
+                                              controller: _nameController,
+                                              decoration: const InputDecoration(
+                                                labelText: 'Enter Name',
+                                              ),
+                                            ),
+                                            const SizedBox(height: 10),
+                                            TextFormField(
+                                              controller: _description,
+                                              minLines: 4,
+                                              maxLines: 5,
+                                              decoration: const InputDecoration(
+                                                labelText:
+                                                    'Explain why you want to continue',
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                        primaryButton: 'Add',
+                                        onPrimaryPressed: () {
+                                          if (_nameController.text
+                                                  .trim()
+                                                  .isEmpty ||
+                                              _description.text
+                                                  .trim()
+                                                  .isEmpty) {
+                                            showErrorDialog(context,
+                                                title: 'Missing Fields',
+                                                message:
+                                                    'Please enter name and description to continue');
+                                            return;
+                                          }
+                                          Navigator.of(context).pop({
+                                            'name': _nameController.text,
+                                            'description': _description.text,
+                                          });
+                                        },
+                                        secondaryButton: 'Cancel',
+                                      );
+                                    });
+
+                            if (details != null) {
+                              launchWhatsApp(
+                                phone: widget.projectDetails['whatsapp'],
+                                message:
+                                    'Hi, im ${details['name']} and ${details['description']} Project : ${widget.projectDetails['title']}',
+                              );
+                              setState(() {});
+                            }
+                          },
+                          // iconData: Icons.person_add,
+                          label: 'Add Collab',
                         )
                       ],
                     ),
@@ -200,12 +304,16 @@ class _ProjectDetailScreenState extends State<ProjectDetailScreen> {
                   const SizedBox(height: 5),
 
                   if (widget.projectDetails['user_id'] !=
-                      Supabase.instance.client.auth.currentUser!.id)
+                          Supabase.instance.client.auth.currentUser!.id &&
+                      widget.projectDetails['fund_url'] != null)
                     Padding(
                       padding: const EdgeInsets.only(top: 15),
                       child: CustomButton(
                         inverse: true,
-                        onPressed: () {},
+                        onPressed: () async {
+                          launchUrlStr(
+                              urlStr: widget.projectDetails['fund_url']);
+                        },
                         label: 'Fund Project',
                       ),
                     ),
@@ -332,5 +440,26 @@ class _ReviewDialogState extends State<ReviewDialog> {
         ),
       ],
     );
+  }
+}
+
+void launchWhatsApp({required String phone, required String message}) async {
+  final Uri url =
+      Uri.parse("https://wa.me/$phone?text=${Uri.encodeComponent(message)}");
+
+  if (await canLaunchUrl(url)) {
+    await launchUrl(url, mode: LaunchMode.externalApplication);
+  } else {
+    throw 'Could not launch WhatsApp';
+  }
+}
+
+void launchUrlStr({required String urlStr}) async {
+  final Uri url = Uri.parse(urlStr);
+
+  if (await canLaunchUrl(url)) {
+    await launchUrl(url);
+  } else {
+    throw 'Could not launch Fund raiser link';
   }
 }

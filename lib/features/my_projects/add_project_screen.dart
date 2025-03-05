@@ -32,6 +32,8 @@ class _AddProjectScreenState extends State<AddProjectScreen> {
   final TextEditingController _projectNameController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
   final TextEditingController _fundController = TextEditingController();
+  final TextEditingController _whatsappController = TextEditingController();
+  final TextEditingController _fundUrlController = TextEditingController();
 
   int? _selectedCategoryId;
   XFile? _coverImage;
@@ -39,6 +41,8 @@ class _AddProjectScreenState extends State<AddProjectScreen> {
   bool _fundingRequired = false;
 
   Map? country;
+
+  List<Map<String, dynamic>> requirements = [];
 
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
@@ -50,9 +54,19 @@ class _AddProjectScreenState extends State<AddProjectScreen> {
       _projectNameController.text = widget.projectDetails!['title'];
       _descriptionController.text = widget.projectDetails!['description'];
       _selectedCategoryId = widget.projectDetails!['category_id'];
+      requirements = widget.projectDetails!['requirements'] ?? [];
       _fundingRequired = widget.projectDetails!['fund_required'] != null;
       _fundController.text = widget.projectDetails!['fund_required'] != null
           ? widget.projectDetails!['fund_required'].toString()
+          : '';
+      _whatsappController.text = widget.projectDetails!['whatsapp'] != null
+          ? widget.projectDetails!['whatsapp'].toString()
+          : '';
+      _fundController.text = widget.projectDetails!['fund_required'] != null
+          ? widget.projectDetails!['fund_required'].toString()
+          : '';
+      _fundUrlController.text = widget.projectDetails!['fund_url'] != null
+          ? widget.projectDetails!['fund_url'].toString()
           : '';
       country = {
         'country': widget.projectDetails!['country'],
@@ -186,6 +200,125 @@ class _AddProjectScreenState extends State<AddProjectScreen> {
                         ),
                       ),
                       const Divider(height: 30),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: Text(
+                              'Requirements',
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .titleMedium!
+                                  .copyWith(
+                                    color: Colors.black87,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                            ),
+                          ),
+                          IconButton(
+                            onPressed: () async {
+                              final Map<String, dynamic>? requirement =
+                                  await showDialog(
+                                      context: context,
+                                      builder: (context) {
+                                        TextEditingController _nameController =
+                                            TextEditingController();
+                                        TextEditingController
+                                            _quantityController =
+                                            TextEditingController();
+
+                                        return CustomAlertDialog(
+                                          title: 'Add Requirement',
+                                          content: Column(
+                                            children: [
+                                              TextFormField(
+                                                controller: _nameController,
+                                                decoration:
+                                                    const InputDecoration(
+                                                  labelText: 'Name',
+                                                ),
+                                              ),
+                                              const SizedBox(height: 10),
+                                              TextFormField(
+                                                controller: _quantityController,
+                                                decoration:
+                                                    const InputDecoration(
+                                                  labelText: 'Quantity',
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                          primaryButton: 'Add',
+                                          onPrimaryPressed: () {
+                                            if (_nameController.text
+                                                    .trim()
+                                                    .isEmpty ||
+                                                _quantityController.text
+                                                    .trim()
+                                                    .isEmpty) {
+                                              showErrorDialog(context,
+                                                  title: 'Missing Fields',
+                                                  message:
+                                                      'Please enter name and quantity to continue');
+                                              return;
+                                            }
+                                            Navigator.of(context).pop({
+                                              'name': _nameController.text,
+                                              'quantity':
+                                                  _quantityController.text,
+                                            });
+                                          },
+                                          secondaryButton: 'Cancel',
+                                        );
+                                      });
+
+                              if (requirement != null) {
+                                requirements.add(requirement);
+                                setState(() {});
+                              }
+                            },
+                            icon: const Icon(Icons.add),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 10),
+                      ListView.separated(
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
+                        itemBuilder: (context, index) => Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 0),
+                          child: Row(
+                            children: [
+                              Expanded(
+                                  child: Text(
+                                requirements[index]['name'],
+                              )),
+                              Text(
+                                requirements[index]['quantity'],
+                              ),
+                              const SizedBox(width: 10),
+                              IconButton(
+                                onPressed: () {
+                                  requirements.removeAt(index);
+                                  setState(() {});
+                                },
+                                icon: Icon(Icons.delete),
+                              ),
+                            ],
+                          ),
+                        ),
+                        separatorBuilder: (context, index) =>
+                            const SizedBox(height: 10),
+                        itemCount: requirements.length,
+                      ),
+                      if (requirements.isNotEmpty)
+                        TextFormField(
+                          controller: _whatsappController,
+                          validator: phoneNumberValidator,
+                          decoration: const InputDecoration(
+                            labelText: 'Whatsapp No (for requirement)',
+                          ),
+                        ),
+                      const Divider(height: 30),
                       Text(
                         'Select Category',
                         style:
@@ -304,6 +437,17 @@ class _AddProjectScreenState extends State<AddProjectScreen> {
                             ),
                           ),
                         ),
+                      if (_fundingRequired)
+                        Padding(
+                          padding: const EdgeInsets.only(top: 10),
+                          child: TextFormField(
+                            controller: _fundUrlController,
+                            validator: urlValidator,
+                            decoration: const InputDecoration(
+                              labelText: 'Funraiser URL',
+                            ),
+                          ),
+                        ),
                       const Divider(height: 30),
                       CountrySelector(
                         counryStateDistrictCity: country,
@@ -333,10 +477,17 @@ class _AddProjectScreenState extends State<AddProjectScreen> {
                                           _descriptionController.text,
                                       'category_id': _selectedCategoryId,
                                       'image': _coverImage,
+                                      'whatsapp': requirements.isNotEmpty
+                                          ? _whatsappController.text.trim()
+                                          : null,
+                                      'requirements': requirements,
                                       'fund_required': _fundingRequired
                                           ? int.tryParse(_fundController.text
                                                   .trim()) ??
                                               0
+                                          : null,
+                                      'fund_url': _fundingRequired
+                                          ? _fundUrlController.text.trim()
                                           : null,
                                       ...country!
                                     },
@@ -351,10 +502,17 @@ class _AddProjectScreenState extends State<AddProjectScreen> {
                                           _descriptionController.text,
                                       'category_id': _selectedCategoryId,
                                       'image': _coverImage,
+                                      'requirements': requirements,
+                                      'whatsapp': requirements.isNotEmpty
+                                          ? _whatsappController.text.trim()
+                                          : null,
                                       'fund_required': _fundingRequired
                                           ? int.tryParse(_fundController.text
                                                   .trim()) ??
                                               0
+                                          : null,
+                                      'fund_url': _fundingRequired
+                                          ? _fundUrlController.text.trim()
                                           : null,
                                       ...country!
                                     },
