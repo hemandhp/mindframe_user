@@ -27,8 +27,19 @@ class ProjectsBloc extends Bloc<ProjectsEvent, ProjectsState> {
             query = query.eq('category_id', event.categoryId!);
           }
 
-          List<Map<String, dynamic>> projects =
-              await query.order('created_at', ascending: false);
+          List<Map<String, dynamic>> projects = await query
+              .neq('user_id', Supabase.instance.client.auth.currentUser!.id)
+              .order('created_at', ascending: false);
+
+          emit(ProjectsGetSuccessState(projects: projects));
+        } else if (event is GetMyProjectsEvent) {
+          emit(ProjectsLoadingState());
+          PostgrestFilterBuilder<List<Map<String, dynamic>>> query = table
+              .select('*, added_by:user_profiles(*), category:categories(*)');
+
+          List<Map<String, dynamic>> projects = await query
+              .eq('user_id', Supabase.instance.client.auth.currentUser!.id)
+              .order('created_at', ascending: false);
 
           emit(ProjectsGetSuccessState(projects: projects));
         } else if (event is AddProjectEvent) {
@@ -39,7 +50,7 @@ class ProjectsBloc extends Bloc<ProjectsEvent, ProjectsState> {
           String uploadedPath = await uploadFile(
             'project',
             imageFile,
-            image.name + DateTime.now().toString() + image.path.split('.').last,
+            image.name,
           );
 
           event.projectDetails['image_url'] = uploadedPath;
@@ -58,9 +69,7 @@ class ProjectsBloc extends Bloc<ProjectsEvent, ProjectsState> {
             String uploadedPath = await uploadFile(
               'project',
               imageFile,
-              image.name +
-                  DateTime.now().toString() +
-                  image.path.split('.').last,
+              image.name,
             );
 
             event.projectDetails['image_url'] = uploadedPath;

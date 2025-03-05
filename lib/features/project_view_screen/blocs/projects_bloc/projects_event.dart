@@ -9,6 +9,10 @@ class GetProjectsEvent extends ProjectsEvent {
   GetProjectsEvent({this.categoryId});
 }
 
+class GetMyProjectsEvent extends ProjectsEvent {}
+
+class GetJoinedProjectsEvent extends ProjectsEvent {}
+
 class AddProjectEvent extends ProjectsEvent {
   final Map<String, dynamic> projectDetails;
 

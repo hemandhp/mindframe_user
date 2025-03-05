@@ -12,10 +12,13 @@ class ProjectCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    double progress =
-        (projectDetails['fund_required'] - projectDetails['funded_amount']) /
-            projectDetails['fund_required'];
-    int progressPercentage = (progress * 100).round(); // Calculate percentage
+    int progressPercentage = 0;
+    double progress = 0;
+    if (projectDetails['fund_required'] != null) {
+      progress =
+          projectDetails['funded_amount'] / projectDetails['fund_required'];
+      progressPercentage = (progress * 100).round(); // Calculate percentage
+    }
 
     return Container(
       margin: const EdgeInsets.only(right: 16),
@@ -41,7 +44,7 @@ class ProjectCard extends StatelessWidget {
                 top: Radius.circular(12)), // Match container's border radius
             child: AspectRatio(
               aspectRatio: 16 / 9,
-              child: Image.asset(
+              child: Image.network(
                 projectDetails['image_url'],
                 fit: BoxFit.cover,
               ),
@@ -69,47 +72,48 @@ class ProjectCard extends StatelessWidget {
                   style: Theme.of(context).textTheme.titleSmall!.copyWith(
                       color: Colors.grey[400], fontWeight: FontWeight.bold),
                 ),
-                const SizedBox(height: 16),
                 // Progress Bar and Funded Text
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    LinearProgressIndicator(
-                      value: progress.clamp(0.0, 1.0),
-                      backgroundColor: Colors.grey[800],
-                      valueColor:
-                          const AlwaysStoppedAnimation<Color>(Colors.green),
-                    ),
-                    const SizedBox(height: 8),
-                    // Days to Go and Funded Text
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          '${projectDetails['fund_required']} fund required',
-                          style: Theme.of(context)
-                              .textTheme
-                              .bodySmall!
-                              .copyWith(color: Colors.grey[400]),
-                        ),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.end,
-                          children: [
-                            Text(
-                              '$progressPercentage% funded', // Display percentage
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .bodySmall!
-                                  .copyWith(
-                                      color: Colors.green,
-                                      fontWeight: FontWeight.bold),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
+                if (projectDetails['fund_required'] != null)
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const SizedBox(height: 16),
+                      LinearProgressIndicator(
+                        value: progress.clamp(0.0, 1.0),
+                        backgroundColor: Colors.grey[800],
+                        valueColor:
+                            const AlwaysStoppedAnimation<Color>(Colors.green),
+                      ),
+                      const SizedBox(height: 8),
+                      // Days to Go and Funded Text
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            '${projectDetails['fund_required']} fund required',
+                            style: Theme.of(context)
+                                .textTheme
+                                .bodySmall!
+                                .copyWith(color: Colors.grey[400]),
+                          ),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.end,
+                            children: [
+                              Text(
+                                '$progressPercentage% funded', // Display percentage
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .bodySmall!
+                                    .copyWith(
+                                        color: Colors.green,
+                                        fontWeight: FontWeight.bold),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
 
                 Padding(
                   padding: const EdgeInsets.only(top: 16),

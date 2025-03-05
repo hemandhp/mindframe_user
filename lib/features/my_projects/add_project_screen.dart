@@ -69,7 +69,7 @@ class _AddProjectScreenState extends State<AddProjectScreen> {
               if (projectState is ProjectsFailureState) {
                 showErrorDialog(context);
               } else if (projectState is ProjectsSuccessState) {
-                widget.myProjectBloc.add(GetProjectsEvent());
+                widget.myProjectBloc.add(GetMyProjectsEvent());
                 await showDialog(
                   context: context,
                   builder: (context) => const CustomAlertDialog(

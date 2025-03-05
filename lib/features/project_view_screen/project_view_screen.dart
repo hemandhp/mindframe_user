@@ -145,18 +145,30 @@ class _ProjectViewScreenState extends State<ProjectViewScreen> {
                                   fontWeight: FontWeight.bold),
                         ),
                         const SizedBox(height: 10),
-                        ListView.separated(
-                          shrinkWrap: true,
-                          physics: const NeverScrollableScrollPhysics(),
-                          scrollDirection: Axis.vertical,
-                          itemBuilder: (context, index) => ProjectCard(
-                            projectDetails: projects[index],
+                        if (projects.isEmpty)
+                          const Center(
+                            child: Text(
+                              'No projects found',
+                              style: TextStyle(
+                                color: Colors.black87,
+                                fontSize: 20,
+                              ),
+                            ),
+                          )
+                        else
+                          ListView.separated(
+                            shrinkWrap: true,
+                            physics: const NeverScrollableScrollPhysics(),
+                            scrollDirection: Axis.vertical,
+                            itemBuilder: (context, index) => ProjectCard(
+                              projectDetails: projects[index],
+                            ),
+                            separatorBuilder: (context, index) =>
+                                const SizedBox(
+                              height: 20,
+                            ),
+                            itemCount: projects.length,
                           ),
-                          separatorBuilder: (context, index) => const SizedBox(
-                            height: 20,
-                          ),
-                          itemCount: projects.length,
-                        ),
                       ],
                     ),
                   ),
